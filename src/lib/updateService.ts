@@ -13,7 +13,7 @@ const REPO = 'Valco/Telegram-store-app';
 const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export async function checkForUpdates(): Promise<UpdateInfo> {
-  const pkg = await import('../../../../package.json');
+  const pkg = await import('../../package.json');
   const currentVersion = pkg.version || '1.0.0';
 
   // Check cached result in Settings

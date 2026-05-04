@@ -441,23 +441,6 @@ export default function SettingsClient({ settings, initialPrompts, initialSocial
                   <button type="button" onClick={() => { setEditingPrompt(null); setIsPromptModalOpen(true); }} className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
                     + Додати Промпт
                   </button>
-                           onChange={(e) => {
-                             const newPrompts = [...photoroomPrompts];
-                             newPrompts[i] = e.target.value;
-                             setPhotoroomPrompts(newPrompts);
-                           }}
-                           rows={2}
-                           className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 pr-8 text-white text-xs outline-none font-mono focus:border-sky-500"
-                           placeholder={`A bright playroom...`}
-                         />
-                         <button type="button" onClick={() => setPhotoroomPrompts(photoroomPrompts.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-black/50 rounded">
-                           ✕
-                         </button>
-                       </div>
-                     ))}
-                     {photoroomPrompts.length === 0 && <div className="text-xs text-neutral-500 p-2">Немає промптів</div>}
-                   </div>
-                 </div>
                </div>
             </div>
           </div>

@@ -12,7 +12,7 @@ type SmmModalState = null | {
   error?: string;
 };
 
-export default function ProductClient({ products, categories, initialPrompts, isAdmin }: { products: any[], categories: any[], initialPrompts: any[], isAdmin?: boolean }) {
+export default function ProductClient({ products, categories, initialPrompts, isAdmin, hasAI = true, hasSMM = true }: { products: any[], categories: any[], initialPrompts: any[], isAdmin?: boolean, hasAI?: boolean, hasSMM?: boolean }) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [editImages, setEditImages] = useState<string[]>([]);

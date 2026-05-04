@@ -5,6 +5,11 @@ import { SocialPlatform, MediaType, PostStatus } from '@prisma/client';
 import fs from 'fs/promises';
 import path from 'path';
 
+async function generateAIVideo(prompt: string, image: string, settings: any): Promise<string> {
+  // Mock function, video generation not yet implemented
+  return '/placeholder-video.mp4';
+}
+
 // Function for image generation (Photoroom)
 async function generateAIPicture(originalUrl: string, settings: any): Promise<{ url: string, promptUsed: string | null }> {
   const env = process.env.PHOTOROOM_ENVIRONMENT || 'sandbox';
@@ -291,7 +296,7 @@ export async function regenerateSinglePostText(postId: string) {
     }
 
     const msg = await anthropic.messages.create({
-      model: settings.anthropicModel || 'claude-sonnet-4-6',
+      model: settings?.anthropicModel || 'claude-sonnet-4-6',
       max_tokens: 1000,
       system: sysPrompt,
       messages: [{ role: 'user', content: `Напиши пост для товару "${post.product.name}".` }],

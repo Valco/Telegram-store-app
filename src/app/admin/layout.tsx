@@ -12,6 +12,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   const permissions = session?.permissions || [];
 
   // Load site name from settings
+  // @ts-ignore
   const settings = await prisma.settings.findFirst({ select: { siteName: true } }).catch(() => null);
   const siteName = settings?.siteName || 'Telegram Store';
 

@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'PRO_REQUIRED', feature: 'AI', upgradeUrl: '/admin/support' }, { status: 403 });
     }
 
+    const body = await req.json();
     const { name, themeId, imageUrl, clientBase64Image } = body;
 
     console.log(`API AI ACTION 2: generateProductTextWithClaude STARTED for imageUrl: ${imageUrl}, themeId: ${themeId}`);
