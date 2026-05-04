@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import ProductClient from './ProductClient';
 import { getPrompts } from '../settings/promptActions';
 import { cookies } from 'next/headers';
+import { canUseFeature } from '@/lib/license';
 
 export default async function ProductsPage() {
   const products = await prisma.product.findMany({
@@ -25,6 +26,9 @@ export default async function ProductsPage() {
   const session = await decryptJWT(sessionCookie);
   const isAdmin = session?.permissions?.includes('VIEW_ALL') || session?.permissions?.includes('MANAGE_SETTINGS');
 
+  const hasAI = await canUseFeature('AI');
+  const hasSMM = await canUseFeature('SMM');
+
   return (
     <div className="animate-in fade-in duration-500">
       <ProductClient 
@@ -32,6 +36,8 @@ export default async function ProductsPage() {
         categories={safeCategories} 
         initialPrompts={safePrompts} 
         isAdmin={isAdmin}
+        hasAI={hasAI}
+        hasSMM={hasSMM}
       />
     </div>
   );

@@ -762,8 +762,11 @@ export default function ProductClient({ products, categories, initialPrompts, is
                 </td>
                 <td className="px-4 py-4 text-right space-x-3 whitespace-nowrap">
                   {isAdmin && (
-                    <button disabled={loading} onClick={() => handleGenerateSMMClick(p)} className="text-xs text-fuchsia-400 hover:text-fuchsia-300 transition-colors">
-                      SMM Пости
+                    <button disabled={loading} onClick={() => {
+                      if (!hasSMM) { alert('Ця функція доступна лише в PRO ліцензії'); return; }
+                      handleGenerateSMMClick(p);
+                    }} className={`text-xs transition-colors ${hasSMM ? 'text-fuchsia-400 hover:text-fuchsia-300' : 'text-neutral-600 cursor-not-allowed'}`} title={!hasSMM ? 'Доступно у PRO версії' : ''}>
+                      {hasSMM ? 'SMM Пости' : '🔒 SMM'}
                     </button>
                   )}
                   <button onClick={() => handlePublishTG(p.id, p.name)} className="text-xs text-sky-400 hover:text-sky-300 transition-colors">

@@ -29,6 +29,7 @@ export default function Sidebar({ permissions = [], siteName = 'Telegram Store' 
     { href: '/admin/customers',  name: 'Клієнти',              icon: '🫂', show: can('MANAGE_USERS') },
     { href: '/admin/users',      name: 'Персонал (Ролі)',      icon: '🛡', show: can('MANAGE_RBAC') },
     { href: '/admin/settings',   name: 'Налаштування',         icon: '⚙️', show: can('MANAGE_SETTINGS') },
+    { href: '/admin/license',    name: 'Ліцензія (PRO)',       icon: '🔑', show: can('MANAGE_SETTINGS') },
     { href: '/admin/support',    name: 'Підтримати автора',    icon: '☕', show: true },
   ].filter(l => l.show);
 

@@ -59,6 +59,30 @@ export async function getLicenseInfo(): Promise<LicenseInfo> {
       return _setCached({ valid: false, plan: 'free', features: [], domain: expectedDomain, expiresAt, daysLeft, reason: 'domain_mismatch' });
     }
 
+    // Phase 4: Remote Verification (Optional)
+    const remoteServerUrl = process.env.LICENSE_SERVER_URL;
+    let isRevokedRemotely = false;
+
+    if (remoteServerUrl && expectedDomain) {
+      try {
+        const verifyUrl = `${remoteServerUrl}/api/verify?key=${encodeURIComponent(key)}&domain=${encodeURIComponent(actualDomain || expectedDomain)}`;
+        const remoteRes = await fetch(verifyUrl, { timeout: 3000 } as RequestInit);
+        if (remoteRes.ok) {
+          const remoteData = await remoteRes.json();
+          if (remoteData.valid === false && remoteData.reason === 'revoked') {
+            isRevokedRemotely = true;
+          }
+        }
+      } catch (err) {
+        // Ignore network errors, fallback to RSA local verification
+        console.warn('License Server unreachable, relying on local RSA check.');
+      }
+    }
+
+    if (isRevokedRemotely) {
+      return _setCached({ valid: false, plan: 'free', features: [], domain: expectedDomain, expiresAt, daysLeft: 0, reason: 'revoked' });
+    }
+
     return _setCached({
       valid: true,
       plan: ((payload as any).plan || 'pro') as LicensePlan,
