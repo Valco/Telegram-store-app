@@ -1,0 +1,291 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Roles for simple customer check vs staff
+enum Role {
+  CUSTOMER
+  STAFF
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+enum ProductStatus {
+  IN_STOCK
+  MADE_TO_ORDER
+  OUT_OF_STOCK
+}
+
+enum SocialPlatform {
+  INSTAGRAM
+  FACEBOOK
+  TIKTOK
+}
+
+enum PostStatus {
+  GENERATING
+  DRAFT
+  APPROVED
+  PUBLISHED
+  FAILED
+}
+
+enum MediaType {
+  IMAGE
+  CAROUSEL
+  REELS
+}
+
+model User {
+  id              String         @id @default(uuid())
+  telegramId      BigInt?        @unique
+  firstName       String?
+  lastName        String?
+  username        String?
+  phone           String?
+  botSubscriptionStatus String?
+  role            Role           @default(CUSTOMER)
+  // Dynamic RBAC for admin panel
+  accessGroupId   String?
+  accessGroup     AccessGroup?   @relation(fields: [accessGroupId], references: [id])
+  
+  // Custom Auth for Admins
+  email           String?        @unique
+  passwordHash    String?
+  requiresOtp     Boolean        @default(true)
+  otpCode         String?
+  otpExpiresAt    DateTime?
+
+  coinsBalance    Int            @default(0)
+  activeDiscountPercent Int?       // Applied via Roulette (10, 25, 50, 75)
+  discountExpiresAt     DateTime?  // Token expiration for discount
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  lastLoginAt     DateTime?
+  orders          Order[]
+  carts           Cart[]
+  reviews         Review[]
+  coinsHistory    CoinsHistory[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  slug        String    @unique
+  
+  // Hierarchical categories
+  parentId    String?
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model AccessGroup {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g. "Суперадмін", "Менеджер"
+  permissions String[] // e.g. ["MANAGE_USERS", "MANAGE_PRODUCTS", "VIEW_ONLY"]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id                  String        @id @default(uuid())
+  name                String
+  description         String
+  price               Int           // Storing in cents/kopecks
+  stock               Int           @default(0) // Inventory count
+  status              ProductStatus @default(IN_STOCK)
+  madeToOrderDays     Int?          // If made to order, how many days it takes
+  categoryId          String
+  category            Category      @relation(fields: [categoryId], references: [id])
+  images              String[]      // Array of URLs to S3 / Local storage
+  sourceUrl           String?       // Source product link (e.g., Makerworld, Thingiverse)
+  videoUrl            String?
+  sizes               String[]      // E.g. ["S", "M", "L"]
+  sku                 String?       @unique
+  isPublished         Boolean       @default(false)
+  scheduledPublishAt  DateTime?     // For delayed posting to TG channel
+  tgPostId            String?       // ID of the post in Telegram channel
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  orderItems          OrderItem[]
+  cartItems           CartItem[]
+  reviews             Review[]
+  socialPosts         SocialPost[]
+}
+
+model Order {
+  id                String      @id @default(uuid())
+  orderNumber       String      @unique // e.g. "ORD-12345"
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  status            OrderStatus @default(PENDING)
+  totalAmount       Int         // Total cost in cents before coins
+  coinsUsed         Int         @default(0) // How many coins were applied
+  finalAmount       Int         // Amount to be paid after coin discount
+  paymentMethod     String      // "monobank", etc.
+  paymentId         String?     // ID from the payment provider
+  deliveryMethod    String      // "nova_poshta", "ukrposhta"
+  deliveryCity      String?
+  deliveryCityRef   String?
+  deliveryBranch    String?
+  deliveryBranchRef String?
+  novaPoshtaTtn     String?     // Waybill number (TTN)
+  customerComment   String?
+  doNotCall         Boolean     @default(false)
+  cashbackEarned    Boolean     @default(false)
+  
+  // Fiscalization (PRRO)
+  fiscalReceiptId   String?     // Checkbox.ua receipt ID
+  fiscalReceiptUrl  String?     // Public URL of the receipt
+
+  items             OrderItem[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int      // Snapshot of the price at order time
+  size      String?
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  size      String?
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int
+  comment   String?
+  photoUrls String[] // In case user uploads photos
+  isApproved Boolean @default(false)
+  createdAt DateTime @default(now())
+}
+
+model CoinsHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Int      // Positive for earning, negative for spending
+  reason    String   // "daily_login", "order_payment", "review_bonus"
+  createdAt DateTime @default(now())
+}
+
+model SocialAccount {
+  id            String         @id @default(uuid())
+  platform      SocialPlatform
+  name          String
+  isActive      Boolean        @default(true)
+  posts         SocialPost[]
+}
+
+model SocialPost {
+  id            String         @id @default(uuid())
+  productId     String
+  product       Product        @relation(fields: [productId], references: [id])
+  platform      SocialPlatform
+  accountId     String?
+  account       SocialAccount? @relation(fields: [accountId], references: [id])
+  
+  status        PostStatus     @default(GENERATING)
+  textContent   String?        @db.Text
+  mediaUrls     String[]
+  mediaType     MediaType
+  
+  klingPrompt     String?        @db.Text
+  photoroomPrompt String?        @db.Text
+  
+  scheduledFor  DateTime?      
+  publishedAt   DateTime?
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Settings {
+  id                String   @id @default(uuid()) // Single record, usually
+  maxCoinsPercent   Int      @default(15)         // e.g., 15%
+  coinToUahRate     Int      @default(10)         // 10 coins = 1 UAH
+  
+  // New Loyalty Settings
+  welcomeBonusCoins Int      @default(1000)
+  cashbackPercent   Int      @default(0)          // e.g. 5% cashback
+  
+  rouletteWinChances Json?                        // JSON mapping chance to discount
+  googleAnalyticsId String?
+  metaPixelId       String?
+  
+  // Server configurations
+  siteName          String   @default("Telegram Store")  // Назва магазину (відображається в UI)
+  adminEmail        String   @default("admin@tel.bot")
+  telegramGroupId   String?
+
+  // File Storage Configuration
+  storageProvider   String   @default("local")    // "local" or "s3"
+
+  // Pickup / Self-collection settings
+  enablePickup          Boolean  @default(true)        // Show self-pickup option at checkout
+  pickupAddress         String   @default("")           // Address shown to customers for pickup
+
+  // AI model selection (keys are now in .env)
+  anthropicModel        String   @default("claude-sonnet-4-6")
+  photoroomPrompts      Json?
+  imageGenerator        String   @default("photoroom") // "photoroom" or "dalle"
+  
+  // SMM Automation
+  autoApproveFbPost     Boolean  @default(false)
+  autoApproveInstaPost  Boolean  @default(false)
+  autoApproveInstaReels Boolean  @default(false)
+  socialSchedule        Json?    // e.g. { monday: ["10:00", "15:00"], limit: 3 }
+
+  updatedAt         DateTime @updatedAt
+}
+
+model Prompt {
+  id        String   @id @default(uuid())
+  name      String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
