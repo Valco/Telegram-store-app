@@ -31,8 +31,46 @@ export default function HealthDashboard() {
     return parts.join(' ') || '< 1хв';
   };
 
+  const licenseKey = process.env.LICENSE_KEY;
+  const isLicensed = !!licenseKey && licenseKey.length > 10;
+  // In future: parse JWT to get expiry. For now — show status.
+  const licenseStatus = isLicensed ? 'PRO' : 'FREE / Trial';
+  const licenseColor = isLicensed ? 'emerald' : 'amber';
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+      {/* License Status Card */}
+      <div className={`bg-${licenseColor}-500/10 border border-${licenseColor}-500/20 p-6 rounded-2xl flex items-center justify-between`}>
+        <div className="flex items-center gap-4">
+          <div className={`w-12 h-12 rounded-xl bg-${licenseColor}-500/20 border border-${licenseColor}-500/30 flex items-center justify-center text-2xl`}>
+            {isLicensed ? '🔐' : '🔓'}
+          </div>
+          <div>
+            <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold mb-1">Ліцензія</p>
+            <p className={`text-xl font-black text-${licenseColor}-400`}>{licenseStatus}</p>
+            {isLicensed
+              ? <p className="text-xs text-neutral-400 mt-1">Ключ активовано · Термін дії: перевірте JWT токен</p>
+              : <p className="text-xs text-neutral-400 mt-1">Працює у безкоштовному режимі · PRO функції обмежені</p>
+            }
+          </div>
+        </div>
+        {!isLicensed && (
+          <a
+            href="/admin/support"
+            className="bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-xl text-sm font-bold transition-all"
+          >
+            Отримати PRO →
+          </a>
+        )}
+        {isLicensed && (
+          <span className="text-xs font-mono bg-black/30 px-3 py-1.5 rounded-lg text-neutral-400 border border-white/10">
+            {licenseKey.slice(0, 8)}...{licenseKey.slice(-4)}
+          </span>
+        )}
+      </div>
+
+      {/* Header */}
       <div className="flex justify-between items-center bg-white/5 border border-white/10 p-6 rounded-2xl">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">

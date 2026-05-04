@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import { cookies } from 'next/headers';
 import { decryptJWT } from '@/lib/auth';
 import prisma from '@/lib/prisma';
+import UpdateChecker from '@/components/UpdateChecker';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -32,6 +33,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <div className="p-8">
           {children}
         </div>
+        <UpdateChecker />
       </main>
     </div>
   );

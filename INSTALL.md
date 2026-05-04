@@ -237,7 +237,7 @@ mkdir -p projects
 cd projects
 
 # Завантажуємо проект з GitHub
-git clone https://github.com/Valco/Telegram-mini-app.git store
+git clone https://github.com/Valco/Telegram-store-app.git store
 
 # Переходимо в папку проекту
 cd store
@@ -497,7 +497,7 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE tel_bot_store TO stor
 
 # 4. Завантаження проекту
 mkdir -p ~/projects && cd ~/projects
-git clone https://github.com/Valco/Telegram-mini-app.git store
+git clone https://github.com/Valco/Telegram-store-app.git store
 cd store
 
 # 5. Налаштування .env
