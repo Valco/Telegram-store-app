@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { decryptJWT } from '@/lib/auth';
+import { canUseFeature } from '@/lib/license';
 
 export async function POST(request: Request) {
   try {
+    // Phase 2: License check
+    if (!(await canUseFeature('ROULETTE'))) {
+      return NextResponse.json({ error: 'PRO_REQUIRED', feature: 'ROULETTE', upgradeUrl: '/admin/support' }, { status: 403 });
+    }
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

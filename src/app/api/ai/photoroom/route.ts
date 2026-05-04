@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import fs from 'fs/promises';
 import path from 'path';
+import { canUseFeature } from '@/lib/license';
 
 export async function POST(req: NextRequest) {
   try {
+    // Phase 2: License check
+    if (!(await canUseFeature('AI'))) {
+      return NextResponse.json({ success: false, error: 'PRO_REQUIRED', feature: 'AI', upgradeUrl: '/admin/support' }, { status: 403 });
+    }
+
     const formData = await req.formData();
     const files = formData.getAll('images') as File[];
 

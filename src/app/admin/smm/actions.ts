@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { PostStatus } from '@prisma/client';
+import { requireFeature } from '@/lib/license';
 
 export async function getSocialPosts() {
   try {
@@ -81,12 +82,14 @@ export async function massApprovePosts(ids: string[]) {
 import { regenerateSinglePostText as regenText, regenerateSinglePostMedia as regenMedia } from '@/lib/smmService';
 
 export async function regeneratePostText(id: string) {
+  try { await requireFeature('SMM'); } catch(e:any) { return { success: false, error: e.message }; }
   const res = await regenText(id);
   revalidatePath('/admin/smm');
   return res;
 }
 
 export async function regeneratePostMedia(id: string) {
+  try { await requireFeature('SMM'); } catch(e:any) { return { success: false, error: e.message }; }
   const res = await regenMedia(id);
   revalidatePath('/admin/smm');
   return res;

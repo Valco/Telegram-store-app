@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { PostStatus } from '@prisma/client';
+import { canUseFeature } from '@/lib/license';
 
 // This endpoint is meant to be called periodically (e.g. hourly) by a cron service (Vercel Cron, GitHub Actions, etc.)
 // GET /api/cron/publish-social
 export async function GET(req: Request) {
   try {
+    // Phase 2: License check
+    if (!(await canUseFeature('SMM'))) {
+      return NextResponse.json({ success: false, error: 'PRO_REQUIRED', feature: 'SMM' }, { status: 403 });
+    }
+
     // Basic security check could be implemented here (e.g., check Authorization header against a CRON_SECRET)
 
     // Find posts that are APPROVED and haven't been published yet

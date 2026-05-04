@@ -56,3 +56,6 @@ next-env.d.ts
 
 # Private strategy documents (never publish)
 LICENSING_STRATEGY.md
+
+# License server (separate private deployment)
+/license-server/

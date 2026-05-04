@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma';
 import fs from 'fs/promises';
 import path from 'path';
+import { requireFeature } from '@/lib/license';
 
 // The 'none' prompt is handled dynamically in generateProductTextWithClaude
 
@@ -71,6 +72,7 @@ export async function processMultiplePhotosWithPhotoroom(
   photos: { name: string; type: string; base64: string }[]
 ) {
   try {
+    await requireFeature('AI');
     console.log('AI ACTION 1: processMultiplePhotosWithPhotoroom STARTED. Files count:', photos?.length);
     if (!photos || photos.length === 0) {
       console.log('AI ACTION 1: No files provided.');
@@ -147,6 +149,7 @@ export async function processMultiplePhotosWithPhotoroom(
  */
 export async function generateProductTextWithClaude(name: string, themeId: string, imageUrl: string, clientBase64Image?: string) {
   try {
+    await requireFeature('AI');
     console.log(`AI ACTION 2: generateProductTextWithClaude STARTED`);
     console.log(`AI ACTION 2: PARAMS: name=${name}, themeId=${themeId}, imageUrl=${imageUrl}, base64Len=${clientBase64Image?.length || 0}`);
     if (themeId === 'none') {
