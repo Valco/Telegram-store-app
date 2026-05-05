@@ -92,7 +92,7 @@ export default async function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {latestOrders.map((o) => (
+                {latestOrders.map((o: (typeof latestOrders)[number]) => (
                   <tr key={o.id} className="hover:bg-white/[0.02]">
                     <td className="py-4 pr-4">
                       <Link href={`/admin/orders/${o.id}`} className="font-mono text-indigo-400 hover:underline">{o.orderNumber}</Link>
