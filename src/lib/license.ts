@@ -10,13 +10,13 @@ import { jwtVerify, importSPKI } from 'jose';
 
 // ─── Paste your RSA public key here after running generateKeys.js ─────────────
 const PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7LTyocc3VPf9Ca7BiTRf
-G/7Jm7AmC2wmK7Jgdg09WLQQOEJEL9GcqdknEkyALFDIX/6XCiuWpe+NUFoAfUgD
-mVSVHnuKOK2DGaPnE8/qEsWeE6nCAwxYXgx4pplQoSPS5TKVyVMe/1xN5FIjttkG
-W6LjOB0wRS6PRhafAo4wkRhPRogI48hsFNXOK0TkoQ5Hy24sNkYhWhZK2fm1o7Q3
-unlsyBgGii/y35AAeNtls76Ik4t5ecO9EE+VfYfRF/wN7UoMQyVkBMaI0TE/zf8Z
-m/jtsSGJ7lS9Qx6dOiihtFypz58RVd6RhFJKGovk6uvWFYNNx4IvNKGPsbgptxe7
-gwIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzsNBspaByGQdfkm40dVu
+xNnP36Ihg/HkepSDd/KEDVcTHYld817tnX4G5XDLhNLEmomhwSFxq4ZD7kVwjprF
+EJjsGIxcmKF8ixGS7UDMb4C+9fXAInQLDL00/fL/znZ3xz+FOrlE73FOeEKdQPhq
+j2TnesllvJ6V0sI7mAS6e8pYy+Bni2udjrI/iYyN16Ieovv4JPq0+ukDP6oNgjSt
+BKPEeBJTAgB6ty+W9977g8dwKirhGcQrouTUx4J9DYTnVW1KeDAY29QZ6JwDRAhk
+sgqwYTqpFFetokJkIUzHNI8eCfg78ot4kxQqW3Yo3TkW5dQQICPM0m7Sb4j877dv
+wQIDAQAB
 -----END PUBLIC KEY-----`;
 
 export type LicensePlan = 'pro' | 'starter' | 'free';
