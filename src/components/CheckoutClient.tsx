@@ -30,6 +30,8 @@ export default function CheckoutClient({ products, settings }: { products: any[]
     paymentMethod: 'monobank'
   });
 
+  const [phoneError, setPhoneError] = useState('');
+
   const [cityQuery, setCityQuery] = useState('');
   const [cityResults, setCityResults] = useState<any[]>([]);
   const [isSearchingCity, setIsSearchingCity] = useState(false);
@@ -139,6 +141,14 @@ export default function CheckoutClient({ products, settings }: { products: any[]
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return alert('Помилка авторизації');
+
+    // Phone validation: must have exactly 12 digits (+38 0XX XXX XX XX)
+    const phoneDigits = details.phone.replace(/\D/g, '');
+    if (phoneDigits.length !== 12) {
+      setPhoneError('Введіть повний номер телефону у форматі +38 0XX XXX XX XX');
+      return;
+    }
+    setPhoneError('');
     
     setLoading(true);
     try {
@@ -395,12 +405,16 @@ export default function CheckoutClient({ products, settings }: { products: any[]
                 <label className="block text-xs text-neutral-500 mb-1">Телефон</label>
                 <input 
                   value={details.phone} 
-                  onChange={e => setDetails({...details, phone: formatPhoneNumber(e.target.value)})} 
+                  onChange={e => {
+                    setDetails({...details, phone: formatPhoneNumber(e.target.value)});
+                    if (phoneError) setPhoneError('');
+                  }} 
                   type="text" 
                   required 
                   placeholder="+38 0XX XXX XX XX" 
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500 transition-colors" 
+                  className={`w-full bg-black/50 border rounded-xl px-4 py-3 outline-none transition-colors ${phoneError ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-indigo-500'}`}
                 />
+                {phoneError && <p className="text-red-400 text-xs mt-1">{phoneError}</p>}
               </div>
 
               <div className="relative">
