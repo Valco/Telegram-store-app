@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import https from 'https';
+import { getLicenseInfo } from '@/lib/license';
 
 export async function runSystemDiagnostics() {
   const t0 = performance.now();
@@ -9,7 +10,8 @@ export async function runSystemDiagnostics() {
     db: { status: 'loading', message: '', latencyMs: 0 },
     bot: { status: 'loading', message: '', latencyMs: 0 },
     ssl: { status: 'loading', message: '', latencyMs: 0, daysLeft: 0, validTo: '' },
-    system: { uptimeSec: 0, ramMb: 0 }
+    system: { uptimeSec: 0, ramMb: 0 },
+    license: { valid: false, plan: 'free', features: [], daysLeft: 0, expiresAt: '' }
   };
 
   // 1. DB Connect Test
@@ -84,6 +86,21 @@ export async function runSystemDiagnostics() {
     uptimeSec: Math.floor(process.uptime()),
     ramMb: Math.round(mem.rss / 1024 / 1024)
   };
+
+  // 5. License Check
+  try {
+    const lic = await getLicenseInfo();
+    report.license = {
+      valid: lic.valid,
+      plan: lic.plan,
+      features: lic.features || [],
+      daysLeft: lic.daysLeft || 0,
+      expiresAt: lic.expiresAt || '',
+      reason: lic.reason || '',
+    };
+  } catch {
+    report.license = { valid: false, plan: 'free', features: [], daysLeft: 0, expiresAt: '', reason: 'error' };
+  }
 
   report.totalLatency = Math.round(performance.now() - t0);
 

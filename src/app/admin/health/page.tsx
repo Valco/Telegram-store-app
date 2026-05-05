@@ -31,10 +31,9 @@ export default function HealthDashboard() {
     return parts.join(' ') || '< 1хв';
   };
 
-  const licenseKey = process.env.LICENSE_KEY;
-  const isLicensed = !!licenseKey && licenseKey.length > 10;
-  // In future: parse JWT to get expiry. For now — show status.
-  const licenseStatus = isLicensed ? 'PRO' : 'FREE / Trial';
+  const licenseInfo = report?.license;
+  const isLicensed = licenseInfo?.valid;
+  const licenseStatus = isLicensed ? `PRO` : 'FREE / Trial';
   const licenseColor = isLicensed ? 'emerald' : 'amber';
 
   return (
@@ -50,22 +49,26 @@ export default function HealthDashboard() {
             <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold mb-1">Ліцензія</p>
             <p className={`text-xl font-black text-${licenseColor}-400`}>{licenseStatus}</p>
             {isLicensed
-              ? <p className="text-xs text-neutral-400 mt-1">Ключ активовано · Термін дії: перевірте JWT токен</p>
+              ? <p className="text-xs text-neutral-400 mt-1">
+                  Ключ активовано · Модулі: {licenseInfo.features?.join(', ') || 'Всі'}
+                  {licenseInfo.daysLeft > 0 && ` · Залишилось ${licenseInfo.daysLeft} днів`}
+                  {licenseInfo.expiresAt === 'unlimited' && ' · ♾ Безлімітно'}
+                </p>
               : <p className="text-xs text-neutral-400 mt-1">Працює у безкоштовному режимі · PRO функції обмежені</p>
             }
           </div>
         </div>
         {!isLicensed && (
           <a
-            href="/admin/support"
+            href="/admin/license"
             className="bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-xl text-sm font-bold transition-all"
           >
-            Отримати PRO →
+            Активувати PRO →
           </a>
         )}
         {isLicensed && (
-          <span className="text-xs font-mono bg-black/30 px-3 py-1.5 rounded-lg text-neutral-400 border border-white/10">
-            {licenseKey.slice(0, 8)}...{licenseKey.slice(-4)}
+          <span className="text-xs font-mono bg-emerald-500/10 px-3 py-1.5 rounded-lg text-emerald-400 border border-emerald-500/20 font-bold">
+            {licenseInfo.plan?.toUpperCase()} PLAN
           </span>
         )}
       </div>
