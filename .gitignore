@@ -31,8 +31,9 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files
-# .env and .env.production are committed as TEMPLATES (they contain only placeholders, no real secrets)
-# Real secrets must be placed in .env.local (which is gitignored)
+# .env contains secrets — create manually on each server (see INSTALL.md, Step 4)
+.env
+.env.production
 .env.local
 .env.*.local
 
