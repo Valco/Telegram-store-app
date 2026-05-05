@@ -107,6 +107,37 @@ export default function LicenseClient({ initialLicense }: { initialLicense: Lice
           {loading ? 'Збереження...' : 'Активувати ключ'}
         </button>
       </div>
+      {/* Get License */}
+      <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/5 border border-indigo-500/20 rounded-3xl p-8">
+        <h3 className="text-lg font-bold text-white mb-2">Готові розпочати?</h3>
+        <p className="text-neutral-400 text-sm mb-6">
+          Зв'яжіться з нами для отримання PRO ліцензії та налаштування
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <a
+            href="https://t.me/drukhouse3d"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 bg-[#229ED9]/10 border border-[#229ED9]/30 hover:bg-[#229ED9]/20 px-5 py-3 rounded-xl transition-all group"
+          >
+            <span className="text-2xl">📱</span>
+            <div>
+              <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">Telegram</p>
+              <p className="text-white font-mono font-bold group-hover:text-[#229ED9] transition-colors">@drukhouse3d</p>
+            </div>
+          </a>
+          <a
+            href="mailto:drukhouse3d@gmail.com"
+            className="flex items-center gap-3 bg-white/5 border border-white/10 hover:bg-white/10 px-5 py-3 rounded-xl transition-all group"
+          >
+            <span className="text-2xl">✉️</span>
+            <div>
+              <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">Email</p>
+              <p className="text-white font-mono font-bold group-hover:text-indigo-400 transition-colors">drukhouse3d@gmail.com</p>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
