@@ -353,6 +353,9 @@ npm install
 # Застосовуємо структуру бази даних
 npx prisma db push
 
+# Заповнюємо базу початковими даними (категорії, адмін-акаунт)
+npx prisma db seed
+
 # Збираємо проект для продакшну (займе 2-5 хвилин)
 npm run build
 ```
@@ -361,35 +364,23 @@ npm run build
 
 ---
 
-## 👤 КРОК 6: Створення адміністратора
+## 👤 КРОК 6: Перший адміністратор
 
-```bash
-# Запускаємо скрипт створення адміна
-npx ts-node -e "
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
-const prisma = new PrismaClient();
-async function main() {
-  const hash = await bcrypt.hash('ВАШ_ПАРОЛЬ', 10);
-  await prisma.adminUser.upsert({
-    where: { email: 'ваш@email.com' },
-    update: { passwordHash: hash },
-    create: { email: 'ваш@email.com', passwordHash: hash, role: 'ADMIN', name: 'Admin' }
-  });
-  console.log('Адмін створений!');
-  await prisma.\$disconnect();
-}
-main();
-"
-```
+Команда `npx prisma db seed` з Кроку 5 вже автоматично створила:
+- ✅ Групи доступу (Суперадмін, Адмін, Менеджер, Глядач)
+- ✅ Тестовий адмін-акаунт
 
-> Замініть `ваш@email.com` і `ВАШ_ПАРОЛЬ` на свої дані.
-
-**Або** — просто використайте тестовий акаунт що вже є в системі:
+**Дані для першого входу:**
 - Email: `admin@tel.bot`
 - Пароль: `test111`
+- OTP: вимкнений
 
-⚠️ **Обов'язково змініть пароль після першого входу в адмінку!**
+> ⚠️ **Обов'язково змініть пароль після першого входу** в розділі «Персонал (Ролі)» → ваш акаунт → «Змінити пароль».
+
+**Якщо потрібно перестворити адміна вручну:**
+```bash
+npx prisma db seed
+```
 
 ---
 
@@ -503,8 +494,8 @@ cd store
 # 5. Налаштування .env
 nano .env   # заповніть всі поля
 
-# 6. Встановлення та збірка
-npm install && npx prisma db push && npm run build
+# 6. Встановлення, збірка та seed
+npm install && npx prisma db push && npx prisma db seed && npm run build
 
 # 7. Запуск
 pm2 start npm --name "store-app" -- start && pm2 startup && pm2 save
