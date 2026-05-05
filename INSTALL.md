@@ -330,6 +330,12 @@ AWS_REGION=""
 CHECKBOX_LICENSE_KEY=""
 
 # ============================
+# ЛІЦЕНЗІЯ
+# ============================
+LICENSE_KEY=""
+LICENSE_SERVER_URL="https://license.dh-3d.com"
+
+# ============================
 # НАЛАШТУВАННЯ ДЕПЛОЮ
 # ============================
 DEPLOY_USER="root"
