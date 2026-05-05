@@ -10,13 +10,15 @@ export default function LicenseClient({ initialLicense }: { initialLicense: Lice
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const [showRebuildNotice, setShowRebuildNotice] = useState(false);
+
   const handleSave = async () => {
     if (!key.trim()) return alert('Введіть ключ');
     setLoading(true);
     const res = await saveLicenseKey(key.trim());
     if (res.success) {
-      alert('Ключ збережено! Сторінка буде перезавантажена для перевірки.');
-      window.location.reload();
+      setShowRebuildNotice(true);
+      setLoading(false);
     } else {
       alert('Помилка збереження: ' + res.error);
       setLoading(false);
@@ -138,6 +140,46 @@ export default function LicenseClient({ initialLicense }: { initialLicense: Lice
           </a>
         </div>
       </div>
+
+      {/* Rebuild Notice Modal */}
+      {showRebuildNotice && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#111] border border-emerald-500/30 rounded-3xl p-8 max-w-lg w-full shadow-[0_0_60px_rgba(16,185,129,0.1)]">
+            <div className="text-center mb-6">
+              <div className="text-5xl mb-4">✅</div>
+              <h3 className="text-xl font-bold text-white mb-2">Ключ збережено!</h3>
+              <p className="text-neutral-400 text-sm">
+                Ліцензійний ключ записано у файл <code className="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">.env</code> на сервері.
+              </p>
+            </div>
+
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
+              <p className="text-amber-400 font-bold text-sm mb-2">⚠️ Важливо!</p>
+              <p className="text-neutral-300 text-sm leading-relaxed">
+                Щоб ключ набрав чинності, потрібно <strong className="text-white">перезібрати проект</strong> на сервері. Виконайте ці команди через SSH:
+              </p>
+            </div>
+
+            <div className="bg-black/60 border border-white/10 rounded-xl p-4 mb-6 font-mono text-sm">
+              <p className="text-neutral-500 mb-1"># Підключіться до сервера та виконайте:</p>
+              <p className="text-emerald-400">cd ~/projects/store</p>
+              <p className="text-emerald-400">npm run build</p>
+              <p className="text-emerald-400">pm2 restart store-app</p>
+            </div>
+
+            <p className="text-neutral-500 text-xs text-center mb-6">
+              Збірка займе 2–5 хвилин. Після цього перезавантажте цю сторінку.
+            </p>
+
+            <button
+              onClick={() => { setShowRebuildNotice(false); window.location.reload(); }}
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-3 rounded-xl font-bold transition-all"
+            >
+              Зрозуміло, перезавантажити сторінку
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
