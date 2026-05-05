@@ -10,7 +10,13 @@ import { jwtVerify, importSPKI } from 'jose';
 
 // ─── Paste your RSA public key here after running generateKeys.js ─────────────
 const PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
-REPLACE_WITH_YOUR_PUBLIC_KEY_FROM_license-server/keys/public.pem
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7LTyocc3VPf9Ca7BiTRf
+G/7Jm7AmC2wmK7Jgdg09WLQQOEJEL9GcqdknEkyALFDIX/6XCiuWpe+NUFoAfUgD
+mVSVHnuKOK2DGaPnE8/qEsWeE6nCAwxYXgx4pplQoSPS5TKVyVMe/1xN5FIjttkG
+W6LjOB0wRS6PRhafAo4wkRhPRogI48hsFNXOK0TkoQ5Hy24sNkYhWhZK2fm1o7Q3
+unlsyBgGii/y35AAeNtls76Ik4t5ecO9EE+VfYfRF/wN7UoMQyVkBMaI0TE/zf8Z
+m/jtsSGJ7lS9Qx6dOiihtFypz58RVd6RhFJKGovk6uvWFYNNx4IvNKGPsbgptxe7
+gwIDAQAB
 -----END PUBLIC KEY-----`;
 
 export type LicensePlan = 'pro' | 'starter' | 'free';
